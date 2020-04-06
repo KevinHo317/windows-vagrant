@@ -71,6 +71,37 @@ spicy --uri 'spice+unix:///tmp/packer-windows-2019-amd64-libvirt-spice.socket'
 **NB** the packer template file defines `qemuargs` (which overrides the default packer qemu arguments), if you modify it, verify if you also need include the default packer qemu arguments (see [builder/qemu/step_run.go](https://github.com/hashicorp/packer/blob/master/builder/qemu/step_run.go) or start packer without `qemuargs` defined to see how it starts qemu).
 
 
+## Hyper-V
+
+Install [Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v).
+
+Make sure your user is in the `Hyper-V Administrators` group.
+
+Make sure your Virtual Switch (its vEthernet network adapter) is excluded from the Windows Firewall protected network connections.
+
+Build the base box with:
+
+```bash
+# set this value when you need to set the VM VLAN ID.
+export HYPERV_VLAN_ID=''
+# set the credentials that the guest will use
+# to connect to this host smb share.
+export VAGRANT_SMB_USERNAME=''
+export VAGRANT_SMB_PASSWORD=''
+make build-windows-2019-hyperv
+```
+
+Try the example guest:
+
+```bash
+cd example
+vagrant up --provider=hyperv
+vagrant ssh
+exit
+vagrant destroy -f
+```
+
+
 ## VMware vSphere
 
 Download the Windows Evaluation ISO (you can find the full iso URL in the [windows-2019-vsphere.json](windows-2019-vsphere.json) file) and place it inside the datastore as defined by the `vsphere_iso_url` user variable that is inside the [packer template](windows-2019-vsphere.json).
